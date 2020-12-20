@@ -36,6 +36,72 @@
   <body>
     <div class="main_view">
       <div class="content" ngCloak ng-view=""></div>
+      <br>
+      <div id="frm-analytics">
+        Analytics Info<br/>
+        <input type="text" class="form-control" id="analytics-title" placeholder="Analytics Title">
+        <input type="text" class="form-control" id="analytics-key" placeholder="Analytics Key">
+        <input type="text" class="form-control" id="analytics-description" placeholder="Analytics Description">
+        <button id="save-analytics">Save Analytics Info</button>
+      </div>
+
     </div>
   </body>
+  <script>
+    var analyticsTitleField = document.getElementById('analytics-title')
+    var analyticsKeyField = document.getElementById('analytics-key')
+    var analyticsDescriptionField = document.getElementById('analytics-description')
+    
+    var saveAnalyticsbutton = document.getElementById('save-analytics')
+
+    function loadAnalyticsData() {
+        buildfire.datastore.get('analytics-info', function(err, obj) {
+            if(obj){
+                if(obj.data.analyticsKey) {
+                    analyticsKeyField.value = obj.data.analyticsKey
+                }
+
+                if(obj.data.analyticsTitle) {
+                    analyticsTitleField.value = obj.data.analyticsTitle
+                }
+
+                if(obj.data.analyticsDescription) {
+                    analyticsDescriptionField.value = obj.data.analyticsDescription
+                }
+            }
+        })
+    }
+
+    function saveAnalyticsData() {
+        var title = analyticsTitleField.value
+        var key = analyticsKeyField.value
+        var description = analyticsDescriptionField.value
+        
+        if(title && key && description) {
+            buildfire.analytics.registerEvent({
+                title: title,
+                key: key,
+                description: description
+            }, { silentNotification: false });
+            
+            var analyticsData = {'analyticsKey' : key, 'analyticsTitle': title,  'analyticsDescription': description}
+            buildfire.datastore.save(analyticsData, 'analytics-info', function(err, data) {
+                if (err || !result) {
+                    console.error("Error saving the widget details: ", err);
+                }
+                else {
+                    console.info("Widget details saved");
+                }
+
+            })
+        }
+    }
+    
+    saveAnalyticsbutton.addEventListener('click', function() {
+        saveAnalyticsData()
+    }) 
+
+    loadAnalyticsData();
+
+  </script>
 </html>

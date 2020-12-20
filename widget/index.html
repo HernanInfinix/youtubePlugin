@@ -67,4 +67,18 @@
       ></div>
     </div>
   </body>
+  <script>
+    function loadAnalyticsData() {
+        buildfire.datastore.get('analytics-info', function(err, obj) {
+            if(obj){
+                if(obj.data.analyticsKey) {
+                    buildfire.analytics.trackAction(obj.data.analyticsKey);
+                }
+            }
+        })
+    }
+
+    loadAnalyticsData()
+
+  </script>
 </html>
